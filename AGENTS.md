@@ -73,6 +73,7 @@ Apply these rules when a task involves system design, module boundaries, refacto
 - Avoid monolithic scripts for core logic.
 - Move reusable notebook logic into versioned modules.
 - Prefer composable designs and separation of concerns.
+- Prefer `polars` over `pandas` for dataframe processing when it fits the task and ecosystem constraints.
 - Prioritize long-term maintainability over short-term convenience.
 
 ### Interface and Contract Practices
