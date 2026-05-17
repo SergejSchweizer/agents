@@ -5,7 +5,6 @@ from pathlib import Path
 
 import pytest
 
-import scripts.sync_readme_coverage as coverage_sync
 from scripts.sync_readme_coverage import main, read_coverage_percent, sync_readme
 
 
@@ -73,7 +72,9 @@ def test_sync_readme_raises_when_line_missing(tmp_path: Path) -> None:
         sync_readme(readme, 91.00, check_only=False)
 
 
-def test_main_returns_one_when_coverage_below_threshold(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_main_returns_one_when_coverage_below_threshold(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     coverage_file = tmp_path / "coverage.xml"
     readme = tmp_path / "README.md"
     write_coverage_xml(coverage_file, "0.40")
@@ -95,7 +96,9 @@ def test_main_returns_one_when_coverage_below_threshold(tmp_path: Path, monkeypa
     assert main() == 1
 
 
-def test_main_updates_readme_on_success(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_main_updates_readme_on_success(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     coverage_file = tmp_path / "coverage.xml"
     readme = tmp_path / "README.md"
     write_coverage_xml(coverage_file, "0.98")
@@ -118,7 +121,9 @@ def test_main_updates_readme_on_success(tmp_path: Path, monkeypatch: pytest.Monk
     assert "Test coverage: 98.00%" in readme.read_text(encoding="utf-8")
 
 
-def test_main_returns_one_for_check_only_mismatch(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_main_returns_one_for_check_only_mismatch(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     coverage_file = tmp_path / "coverage.xml"
     readme = tmp_path / "README.md"
     write_coverage_xml(coverage_file, "0.98")

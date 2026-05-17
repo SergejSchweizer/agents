@@ -14,9 +14,16 @@ COVERAGE_PATTERN = re.compile(r"(?m)^Test coverage:\s*\d+(?:\.\d+)?%$")
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--coverage-file", default="coverage.xml", help="Path to coverage XML report")
+    parser.add_argument(
+        "--coverage-file", default="coverage.xml", help="Path to coverage XML report"
+    )
     parser.add_argument("--readme", default="README.md", help="Path to README file")
-    parser.add_argument("--min-coverage", type=float, default=90.0, help="Minimum required coverage percent")
+    parser.add_argument(
+        "--min-coverage",
+        type=float,
+        default=90.0,
+        help="Minimum required coverage percent",
+    )
     parser.add_argument(
         "--check-only",
         action="store_true",

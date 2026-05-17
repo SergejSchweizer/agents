@@ -209,14 +209,20 @@ def main() -> int:
         return 1
 
     agents_updated = write_file(repo_root / "AGENTS.md", agents_content)
-    sync_updated = write_file(repo_root / SYNC_SCRIPT_RELATIVE_PATH, SYNC_SCRIPT_CONTENT)
+    sync_updated = write_file(
+        repo_root / SYNC_SCRIPT_RELATIVE_PATH, SYNC_SCRIPT_CONTENT
+    )
     make_executable(repo_root / SYNC_SCRIPT_RELATIVE_PATH)
     hook_status = upsert_pre_commit_hook(repo_root)
 
     print(f"[install-agents] Repository: {repo_root}")
     print(
         "[install-agents] "
-        + ("Installed/updated AGENTS.md" if agents_updated else "AGENTS.md already up to date")
+        + (
+            "Installed/updated AGENTS.md"
+            if agents_updated
+            else "AGENTS.md already up to date"
+        )
     )
     print(
         "[install-agents] "
