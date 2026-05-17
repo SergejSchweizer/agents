@@ -1,0 +1,12 @@
+# Ignore everything by default
+*
+
+# Keep repository metadata needed for Git behavior
+!.gitignore
+
+# Allow only productive files in this repository
+!AGENTS.md
+!install_agents.py
+!README.md
+!fragments/
+!fragments/*.md
