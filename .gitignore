@@ -1,20 +1,28 @@
-# Ignore everything by default
+# Deny everything by default
 *
 
-# Keep repository metadata needed for Git behavior
+# Keep this file so rules remain versioned
 !.gitignore
 
-# Allow only productive files in this repository
+# Top-level files required by this repository
 !AGENTS.md
-!install_agents.py
 !README.md
+!install_agents.py
 !.pre-commit-config.yaml
-!fragments/
-!fragments/*.md
+
+# GitHub workflow(s)
 !.github/
 !.github/workflows/
 !.github/workflows/*.yml
+
+# Documentation fragments (markdown only)
+!fragments/
+!fragments/**/*.md
+
+# Automation scripts (python only)
 !scripts/
-!scripts/*.py
+!scripts/**/*.py
+
+# Tests (python only)
 !tests/
-!tests/*.py
+!tests/**/*.py
