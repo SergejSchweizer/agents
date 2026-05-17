@@ -158,6 +158,7 @@ Preferred tooling:
 - Import boundaries: `lint-imports` (or configured equivalent).
 
 Pre-commit quality gates must include lint, format, typing, import-boundary checks, tests, and coverage.
+Pre-commit hooks must also keep the current test-coverage value in `README.md` in sync with the latest measured coverage (or fail with an actionable message if it is out of sync).
 
 ### Review Workflow
 

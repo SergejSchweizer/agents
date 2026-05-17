@@ -1,6 +1,7 @@
 # agents
 
 Lightweight AGENTS.md installer and updater for any existing Git repository.
+Test coverage: 96.67%
 
 This repository provides:
 
@@ -83,3 +84,11 @@ After installation:
 - `AGENTS.md`
 - `scripts/sync_agents.py`
 - `.git/hooks/pre-commit` (with a managed AGENTS sync block)
+
+## Local quality gate (coverage sync)
+
+This repository enforces coverage and README sync through pre-commit and CI.
+
+1. Run tests with coverage.
+2. Enforce minimum coverage threshold (90%).
+3. Sync `README.md` line `Test coverage: XX.XX%` with measured coverage.

@@ -8,5 +8,13 @@
 !AGENTS.md
 !install_agents.py
 !README.md
+!.pre-commit-config.yaml
 !fragments/
 !fragments/*.md
+!.github/
+!.github/workflows/
+!.github/workflows/*.yml
+!scripts/
+!scripts/*.py
+!tests/
+!tests/*.py
