@@ -3,12 +3,14 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import re
 import stat
 import subprocess
 import sys
 from pathlib import Path
+from typing import cast
 from urllib.error import URLError
 from urllib.request import urlopen
 
@@ -21,36 +23,121 @@ FRAGMENTS = [
     "fragments/40_testing.md",
     "fragments/50_security_and_end_goal.md",
 ]
+CONFIG_RELATIVE_PATH = Path("config.yaml")
 SYNC_SCRIPT_RELATIVE_PATH = Path("scripts") / "sync_agents.py"
+RUNTIME_CONFIG_RELATIVE_PATH = Path("scripts") / "runtime_config.py"
+LOGGING_UTILS_RELATIVE_PATH = Path("scripts") / "logging_utils.py"
 HOOK_RELATIVE_PATH = Path(".git") / "hooks" / "pre-commit"
 HOOK_BLOCK_START = "# >>> agents-sync (managed) >>>"
 HOOK_BLOCK_END = "# <<< agents-sync (managed) <<<"
+LOG_FORMAT = "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+BOOTSTRAP_LOGFILE = Path("logs") / "agents.log"
+
+CONFIG_YAML_CONTENT = "logfile: logs/agents.log\n"
+RUNTIME_CONFIG_SCRIPT_CONTENT = """#!/usr/bin/env python3
+\"\"\"Runtime configuration loading utilities.\"\"\"
+
+from __future__ import annotations
+
+from pathlib import Path
+
+
+def read_logfile_from_config(config_path: Path | None = None) -> Path:
+    \"\"\"Read the logfile path from config.yaml.\"\"\"
+    path = config_path or Path("config.yaml")
+    if not path.exists():
+        raise FileNotFoundError(f"Config file not found: {path}")
+
+    for raw_line in path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if ":" not in line:
+            continue
+        key, value = line.split(":", 1)
+        if key.strip() != "logfile":
+            continue
+        cleaned = value.strip().strip("'\\\"")
+        if not cleaned:
+            raise ValueError("config.yaml key 'logfile' must not be empty")
+        return Path(cleaned)
+
+    raise ValueError("config.yaml must define a top-level 'logfile' key")
+"""
+
+LOGGING_UTILS_SCRIPT_CONTENT = """#!/usr/bin/env python3
+\"\"\"Shared logging configuration for scripts.\"\"\"
+
+from __future__ import annotations
+
+import logging
+from pathlib import Path
+
+from scripts.runtime_config import read_logfile_from_config
+
+LOG_FORMAT = "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+
+
+def configure_logger(name: str, config_path: Path | None = None) -> logging.Logger:
+    \"\"\"Configure and return a module logger using shared config.yaml logfile.\"\"\"
+    logfile_path = read_logfile_from_config(config_path)
+    logfile_path.parent.mkdir(parents=True, exist_ok=True)
+
+    root_logger = logging.getLogger()
+    if not getattr(root_logger, "_agents_logging_configured", False):
+        formatter = logging.Formatter(LOG_FORMAT)
+        file_handler = logging.FileHandler(logfile_path, encoding="utf-8")
+        file_handler.setFormatter(formatter)
+
+        stream_handler = logging.StreamHandler()
+        stream_handler.setFormatter(formatter)
+
+        root_logger.handlers.clear()
+        root_logger.addHandler(file_handler)
+        root_logger.addHandler(stream_handler)
+        root_logger.setLevel(logging.INFO)
+        setattr(root_logger, "_agents_logging_configured", True)
+
+    return logging.getLogger(name)
+"""
 
 SYNC_SCRIPT_CONTENT = f"""#!/usr/bin/env python3
 \"\"\"Sync AGENTS.md from central AGENTS fragments.\"\"\"
 
 from __future__ import annotations
 
+import logging
 import subprocess
 import sys
 from pathlib import Path
+from typing import cast
 from urllib.error import URLError
 from urllib.request import urlopen
 
+from scripts.logging_utils import configure_logger
+
 RAW_BASE_URL = "{RAW_BASE_URL}"
-FRAGMENTS = {FRAGMENTS!r}
+FRAGMENTS = [
+    "fragments/00_purpose.md",
+    "fragments/10_core_rules.md",
+    "fragments/20_architecture.md",
+    "fragments/30_code_review.md",
+    "fragments/40_testing.md",
+    "fragments/50_security_and_end_goal.md",
+]
+LOGGER = logging.getLogger(__name__)
 
 
 def download_text(url: str) -> str:
     with urlopen(url, timeout=15) as response:
-        return response.read().decode("utf-8")
+        return cast(str, response.read().decode("utf-8"))
 
 
 def build_agents_content() -> str:
     parts = []
     for fragment in FRAGMENTS:
         url = f"{{RAW_BASE_URL}}/{{fragment}}"
-        print(f"[agents-sync] Downloading {{url}}")
+        LOGGER.info("Downloading %s", url)
         parts.append(download_text(url).rstrip())
     return "\\n\\n".join(parts) + "\\n"
 
@@ -65,33 +152,36 @@ def stage_agents_file(repo_root: Path) -> None:
     )
     if result.returncode != 0:
         message = result.stderr.strip() or result.stdout.strip() or "unknown error"
-        print(f"[agents-sync] Warning: Could not stage AGENTS.md: {{message}}")
+        LOGGER.warning("Could not stage AGENTS.md: %s", message)
     else:
-        print("[agents-sync] Staged updated AGENTS.md")
+        LOGGER.info("Staged updated AGENTS.md")
 
 
 def main() -> int:
+    configure_logger("agents-sync")
     repo_root = Path.cwd()
     agents_path = repo_root / "AGENTS.md"
 
     try:
         remote_content = build_agents_content()
     except URLError as exc:
-        print(f"[agents-sync] Warning: Could not download AGENTS fragments: {{exc}}")
-        print("[agents-sync] Continuing without updates.")
+        LOGGER.warning("Could not download AGENTS fragments: %s", exc)
+        LOGGER.info("Continuing without updates.")
         return 0
     except Exception as exc:  # noqa: BLE001
-        print(f"[agents-sync] Warning: Unexpected download error: {{exc}}")
-        print("[agents-sync] Continuing without updates.")
+        LOGGER.warning("Unexpected download error: %s", exc)
+        LOGGER.info("Continuing without updates.")
         return 0
 
-    local_content = agents_path.read_text(encoding="utf-8") if agents_path.exists() else ""
+    local_content = (
+        agents_path.read_text(encoding="utf-8") if agents_path.exists() else ""
+    )
     if local_content == remote_content:
-        print("[agents-sync] AGENTS.md already up to date.")
+        LOGGER.info("AGENTS.md already up to date.")
         return 0
 
     agents_path.write_text(remote_content, encoding="utf-8")
-    print("[agents-sync] Updated AGENTS.md from central fragments.")
+    LOGGER.info("Updated AGENTS.md from central fragments.")
     stage_agents_file(repo_root)
     return 0
 
@@ -99,6 +189,26 @@ def main() -> int:
 if __name__ == "__main__":
     sys.exit(main())
 """
+def configure_bootstrap_logger(name: str) -> logging.Logger:
+    """Configure process-wide logger for installer runtime."""
+    logfile_path = BOOTSTRAP_LOGFILE
+    logfile_path.parent.mkdir(parents=True, exist_ok=True)
+    root_logger = logging.getLogger()
+    if not getattr(root_logger, "_agents_logging_configured", False):
+        formatter = logging.Formatter(LOG_FORMAT)
+        file_handler = logging.FileHandler(logfile_path, encoding="utf-8")
+        file_handler.setFormatter(formatter)
+        stream_handler = logging.StreamHandler()
+        stream_handler.setFormatter(formatter)
+        root_logger.handlers.clear()
+        root_logger.addHandler(file_handler)
+        root_logger.addHandler(stream_handler)
+        root_logger.setLevel(logging.INFO)
+        setattr(root_logger, "_agents_logging_configured", True)
+    return logging.getLogger(name)
+
+
+LOGGER = configure_bootstrap_logger("install-agents")
 
 
 def get_git_repo_root() -> Path:
@@ -118,7 +228,7 @@ def get_git_repo_root() -> Path:
 def download_text(url: str) -> str:
     """Download text file from URL."""
     with urlopen(url, timeout=15) as response:
-        return response.read().decode("utf-8")
+        return cast(str, response.read().decode("utf-8"))
 
 
 def build_agents_content() -> str:
@@ -126,7 +236,7 @@ def build_agents_content() -> str:
     parts: list[str] = []
     for fragment in FRAGMENTS:
         url = f"{RAW_BASE_URL}/{fragment}"
-        print(f"[install-agents] Downloading {url}")
+        LOGGER.info("Downloading %s", url)
         parts.append(download_text(url).rstrip())
     return "\n\n".join(parts) + "\n"
 
@@ -138,6 +248,29 @@ def write_file(path: Path, content: str) -> bool:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
     return True
+
+
+def write_managed_files(repo_root: Path) -> dict[str, bool]:
+    """Write generated files managed by this installer."""
+    return {
+        "AGENTS.md": write_file(repo_root / "AGENTS.md", build_agents_content()),
+        "scripts/sync_agents.py": write_file(
+            repo_root / SYNC_SCRIPT_RELATIVE_PATH, SYNC_SCRIPT_CONTENT
+        ),
+        "scripts/runtime_config.py": write_file(
+            repo_root / RUNTIME_CONFIG_RELATIVE_PATH, RUNTIME_CONFIG_SCRIPT_CONTENT
+        ),
+        "scripts/logging_utils.py": write_file(
+            repo_root / LOGGING_UTILS_RELATIVE_PATH, LOGGING_UTILS_SCRIPT_CONTENT
+        ),
+        "config.yaml": write_file(repo_root / CONFIG_RELATIVE_PATH, CONFIG_YAML_CONTENT),
+    }
+
+
+def log_update_status(path_label: str, updated: bool) -> None:
+    """Log a consistent status line for managed files."""
+    status = "Installed/updated" if updated else "already up to date"
+    LOGGER.info("%s %s", status, path_label)
 
 
 def make_executable(path: Path) -> None:
@@ -157,7 +290,8 @@ def sync_hook_block() -> str:
         "elif command -v python3 >/dev/null 2>&1; then\n"
         "  python3 scripts/sync_agents.py || true\n"
         "else\n"
-        '  echo "[agents-sync] Warning: python/python3 not found, skipping AGENTS.md sync."\n'
+        '  echo "[agents-sync] Warning: python/python3 not found, '
+        'skipping AGENTS.md sync."\n'
         "fi\n"
         f"{HOOK_BLOCK_END}\n"
     )
@@ -196,44 +330,28 @@ def main() -> int:
     try:
         repo_root = get_git_repo_root()
     except RuntimeError as exc:
-        print(f"[install-agents] Error: {exc}")
+        LOGGER.error("Error: %s", exc)
         return 1
 
     try:
-        agents_content = build_agents_content()
+        managed_file_updates = write_managed_files(repo_root)
     except URLError as exc:
-        print(f"[install-agents] Error: Could not download AGENTS fragments: {exc}")
+        LOGGER.error("Error: Could not download AGENTS fragments: %s", exc)
         return 1
     except Exception as exc:  # noqa: BLE001
-        print(f"[install-agents] Error: Unexpected download error: {exc}")
+        LOGGER.error("Error: Unexpected download error: %s", exc)
         return 1
 
-    agents_updated = write_file(repo_root / "AGENTS.md", agents_content)
-    sync_updated = write_file(
-        repo_root / SYNC_SCRIPT_RELATIVE_PATH, SYNC_SCRIPT_CONTENT
-    )
     make_executable(repo_root / SYNC_SCRIPT_RELATIVE_PATH)
+    make_executable(repo_root / RUNTIME_CONFIG_RELATIVE_PATH)
+    make_executable(repo_root / LOGGING_UTILS_RELATIVE_PATH)
     hook_status = upsert_pre_commit_hook(repo_root)
 
-    print(f"[install-agents] Repository: {repo_root}")
-    print(
-        "[install-agents] "
-        + (
-            "Installed/updated AGENTS.md"
-            if agents_updated
-            else "AGENTS.md already up to date"
-        )
-    )
-    print(
-        "[install-agents] "
-        + (
-            "Installed/updated scripts/sync_agents.py"
-            if sync_updated
-            else "scripts/sync_agents.py already up to date"
-        )
-    )
-    print(f"[install-agents] pre-commit hook {hook_status}")
-    print("[install-agents] Done.")
+    LOGGER.info("Repository: %s", repo_root)
+    for path_label, updated in managed_file_updates.items():
+        log_update_status(path_label, updated)
+    LOGGER.info("pre-commit hook %s", hook_status)
+    LOGGER.info("Done.")
     return 0
 
 

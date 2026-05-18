@@ -43,10 +43,20 @@ The codebase must be understandable by another engineer without tribal knowledge
 - Keep operational docs aligned with code behavior.
 - Do not leave critical behavior changes undocumented.
 
+### Logging Consistency
+
+- All modules must write to the same logfile.
+- The logfile path must be defined in `config.yaml`.
+- Log entries from different modules must use one unified format and structure.
+
 ### Version Control Hygiene
 
 - Use deny-by-default ignore rules: ignore everything in `.gitignore` first, then explicitly allow only required repository files.
 - Keep the allowlist minimal and intentional; do not permit generated artifacts, caches, environments, or local machine state unless explicitly required.
+
+### Continuous Refactoring Loop
+
+- Run a loop in the background to re-analyze the project and apply refactoring suggestions automatically until no refactoring suggestions can be made.
 
 ---
 
@@ -164,7 +174,6 @@ Preferred tooling:
 - Import boundaries: `lint-imports` (or configured equivalent).
 
 Pre-commit quality gates must include lint, format, typing, import-boundary checks, tests, and coverage.
-Pre-commit hooks must also keep the current test-coverage value in `README.md` in sync with the latest measured coverage (or fail with an actionable message if it is out of sync).
 
 ### Review Workflow
 

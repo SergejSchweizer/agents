@@ -9,6 +9,7 @@ This repository provides:
 - `fragments/*.md` as editable source files
 - `install_agents.py` to install/update it in a target project
 - an optional pre-commit sync mechanism
+- centralized logging configured via `config.yaml` (`logfile` key)
 
 ## Install in any project
 
@@ -48,7 +49,11 @@ What it does:
 2. Downloads the latest central AGENTS fragments.
 3. Builds and writes/updates `<project-root>/AGENTS.md`.
 4. Creates/updates `<project-root>/scripts/sync_agents.py`.
-5. Adds or updates a managed block in `<project-root>/.git/hooks/pre-commit`.
+5. Creates/updates shared logging helpers:
+   - `<project-root>/scripts/runtime_config.py`
+   - `<project-root>/scripts/logging_utils.py`
+6. Creates/updates `<project-root>/config.yaml` with the shared logfile path.
+7. Adds or updates a managed block in `<project-root>/.git/hooks/pre-commit`.
 
 The managed hook block runs:
 
@@ -63,6 +68,14 @@ From your target project root:
 
 ```bash
 python scripts/sync_agents.py
+```
+
+## Logging configuration
+
+All modules write to the same logfile configured in `config.yaml`:
+
+```yaml
+logfile: logs/agents.log
 ```
 
 ## Idempotency

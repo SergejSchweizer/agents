@@ -9,6 +9,7 @@
 !README.md
 !install_agents.py
 !.pre-commit-config.yaml
+!config.yaml
 
 # GitHub workflow(s)
 !.github/

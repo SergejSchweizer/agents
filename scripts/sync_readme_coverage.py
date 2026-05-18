@@ -4,12 +4,16 @@
 from __future__ import annotations
 
 import argparse
+import logging
 import re
 import sys
-from pathlib import Path
 import xml.etree.ElementTree as ET
+from pathlib import Path
+
+from scripts.logging_utils import configure_logger
 
 COVERAGE_PATTERN = re.compile(r"(?m)^Test coverage:\s*\d+(?:\.\d+)?%$")
+LOGGER = logging.getLogger(__name__)
 
 
 def parse_args() -> argparse.Namespace:
@@ -54,27 +58,29 @@ def sync_readme(readme_path: Path, coverage_percent: float, check_only: bool) ->
     match = COVERAGE_PATTERN.search(content)
     if match is None:
         raise ValueError(
-            "README.md is missing a coverage line. Add a line like: 'Test coverage: 90.00%'"
+            "README.md is missing a coverage line. "
+            "Add a line like: 'Test coverage: 90.00%'"
         )
 
     current_line = match.group(0)
     if current_line == expected_line:
-        print(f"[coverage-sync] README already in sync ({expected_line}).")
+        LOGGER.info("README already in sync (%s).", expected_line)
         return False
 
     if check_only:
-        print("[coverage-sync] README coverage line is out of sync.")
-        print(f"[coverage-sync] Current:  {current_line}")
-        print(f"[coverage-sync] Expected: {expected_line}")
+        LOGGER.error("README coverage line is out of sync.")
+        LOGGER.error("Current:  %s", current_line)
+        LOGGER.error("Expected: %s", expected_line)
         raise RuntimeError("README coverage line must be updated")
 
     updated = content[: match.start()] + expected_line + content[match.end() :]
     readme_path.write_text(updated, encoding="utf-8")
-    print(f"[coverage-sync] Updated README coverage line to {expected_line}.")
+    LOGGER.info("Updated README coverage line to %s.", expected_line)
     return True
 
 
 def main() -> int:
+    configure_logger("coverage-sync")
     args = parse_args()
 
     coverage_file = Path(args.coverage_file)
@@ -82,18 +88,19 @@ def main() -> int:
 
     try:
         coverage_percent = read_coverage_percent(coverage_file)
-        print(f"[coverage-sync] Measured coverage: {coverage_percent:.2f}%")
+        LOGGER.info("Measured coverage: %.2f%%", coverage_percent)
 
         if coverage_percent < args.min_coverage:
-            print(
-                f"[coverage-sync] Coverage {coverage_percent:.2f}% is below minimum "
-                f"{args.min_coverage:.2f}%"
+            LOGGER.error(
+                "Coverage %.2f%% is below minimum %.2f%%",
+                coverage_percent,
+                args.min_coverage,
             )
             return 1
 
         sync_readme(readme_path, coverage_percent, args.check_only)
     except Exception as exc:  # noqa: BLE001
-        print(f"[coverage-sync] Error: {exc}")
+        LOGGER.error("Error: %s", exc)
         return 1
 
     return 0
