@@ -1,6 +1,36 @@
 repos:
   - repo: local
     hooks:
+      - id: ruff-lint
+        name: ruff-lint
+        entry: python -m ruff check .
+        language: system
+        pass_filenames: false
+
+      - id: ruff-format-check
+        name: ruff-format-check
+        entry: python -m ruff format --check .
+        language: system
+        pass_filenames: false
+
+      - id: mypy
+        name: mypy
+        entry: python -m mypy .
+        language: system
+        pass_filenames: false
+
+      - id: pytest
+        name: pytest
+        entry: pytest -q
+        language: system
+        pass_filenames: false
+
+      - id: sync-readme-coverage-check
+        name: sync-readme-coverage-check
+        entry: python scripts/sync_readme_coverage.py --check-only
+        language: system
+        pass_filenames: false
+
       - id: agents-install-sync
         name: agents-install-sync
         entry: powershell -NoProfile -Command "Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/SergejSchweizer/agents/main/install_agents.py | Select-Object -ExpandProperty Content | python -"
