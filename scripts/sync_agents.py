@@ -10,6 +10,12 @@ from pathlib import Path
 from urllib.error import URLError
 from urllib.request import urlopen
 
+# Ensure repository root is importable, even when invoked from hook contexts.
+SCRIPT_PATH = Path(__file__).resolve()
+REPO_ROOT = SCRIPT_PATH.parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
 from scripts.logging_utils import configure_logger
 
 RAW_BASE_URL = "https://raw.githubusercontent.com/SergejSchweizer/agents/main"
@@ -57,8 +63,8 @@ def stage_agents_file(repo_root: Path) -> None:
 
 
 def main() -> int:
-    configure_logger("agents-sync")
-    repo_root = Path.cwd()
+    configure_logger("agents-sync", REPO_ROOT / "config.yaml")
+    repo_root = REPO_ROOT
     agents_path = repo_root / "AGENTS.md"
 
     try:

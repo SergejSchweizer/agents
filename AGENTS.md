@@ -405,4 +405,3 @@ Applies to pre-commit synchronization, release readiness, and repository-wide in
 - `python scripts/sync_agents.py`
 - `git diff -- AGENTS.md fragments`
 - `pytest -q`
-
