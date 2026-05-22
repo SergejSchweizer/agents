@@ -1,11 +1,15 @@
-## Code Review
+## Code Quality Gates
 
 ## Scope
 
-Applies to reviews, PR preparation, and quality-gate validation before merge.
+Applies to review readiness, PR preparation, and pre-merge quality-gate validation.
 
 ## Rules
 
+- [MUST] All repositories using this baseline enforce quality gates through pre-commit and CI.
+- [MUST] Pre-commit and CI enforce the same logical checks.
+- [SHOULD] A change that passes locally also passes in CI without additional manual steps.
+- [MUST] CI is the final authority for merge readiness.
 - [MUST] Prioritize correctness and regression risk over style.
 - [MUST] Validate contract and schema integrity and boundary discipline.
 - [MUST] Flag operational risk (idempotency, restartability, observability).
@@ -13,6 +17,8 @@ Applies to reviews, PR preparation, and quality-gate validation before merge.
 - [MUST] Use explicit typing and return types on public interfaces.
 - [SHOULD] Require docstrings for non-trivial modules and functions.
 - [MUST] Run lint, format, typing, tests, and coverage checks before merge when practical.
+- [MUST] Required quality-gate checks include Ruff linting, Ruff formatting check, Pyright strict type checking, Pytest, coverage threshold, docstring checks, import boundary checks, and architecture tests.
+- [MUST] Agents must not bypass checks with `--no-verify` unless explicitly instructed by the human maintainer.
 
 ## Review Findings Format
 
@@ -46,5 +52,5 @@ Applies to reviews, PR preparation, and quality-gate validation before merge.
 
 - `ruff check .`
 - `ruff format --check .`
-- `mypy .` or `pyright`
+- `pyright --level error`
 - `pytest -q`

@@ -36,7 +36,3 @@ Applies to configuration, credentials, secrets handling, runtime environment, ex
 - Access scopes minimized.
 - Error handling safe and actionable.
 - Third-party boundaries enforced.
-
-## End Goal
-
-Repositories using these instructions remain production-grade, reproducible, understandable, and extensible.

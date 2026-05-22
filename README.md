@@ -11,6 +11,13 @@ This repository provides:
 - an optional pre-commit sync mechanism
 - centralized logging configured via `config.yaml` (`logfile` key)
 
+## Authoring rules
+
+- `AGENTS.md` is generated from `fragments/*.md`.
+- Do not edit `AGENTS.md` directly for durable policy changes.
+- Make policy changes in the corresponding fragment file, then regenerate.
+- Pre-commit and CI are expected to enforce the same logical quality checks.
+
 ## Install in any project
 
 Run this from the root of your target project:
@@ -92,7 +99,16 @@ Debugging expectation for CLI workflows:
 
 ## Source layout in this repository
 
-- `fragments/*.md` are the source-of-truth sections.
+- `fragments/*.md` are the source-of-truth sections:
+  - `fragments/00_purpose.md`
+  - `fragments/10_core_rules.md`
+  - `fragments/20_architecture.md`
+  - `fragments/30_code_quality_gates.md`
+  - `fragments/40_testing.md`
+  - `fragments/50_python_tooling.md`
+  - `fragments/60_agent_workflow.md`
+  - `fragments/70_security.md`
+  - `fragments/80_release_and_sync.md`
 - `AGENTS.md` is the concatenated output of those fragments.
 - Installer and sync script both build `AGENTS.md` from the same fragment list.
 

@@ -6,6 +6,13 @@ Applies to system design, module boundaries, refactors, scalability, reliability
 
 ## Rules
 
+- [SHOULD] Enforce architecture rules with automated tests.
+- [MUST] Required architecture checks include forbidden dependency directions.
+- [MUST] Required architecture checks include circular imports.
+- [MUST] Required architecture checks include infrastructure leaking into domain logic.
+- [MUST] Required architecture checks include presentation or API layers importing persistence internals.
+- [MUST] Required architecture checks include shared utilities becoming dependency-heavy.
+- [SHOULD] Use `import-linter` or dedicated architecture tests to enforce architecture constraints.
 - [MUST] Define contract shape first (types, schema, invariants), then implement.
 - [MUST] Keep dependency direction from policy and domain to implementation details.
 - [MUST] Keep ownership explicit for each module (inputs, outputs, side effects).

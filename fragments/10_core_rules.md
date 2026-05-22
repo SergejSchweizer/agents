@@ -14,7 +14,9 @@ Always active across all modules and workflows.
 - [MUST] Keep operational docs aligned with behavior changes.
 - [MUST] Use one shared logfile path defined in `config.yaml`.
 - [MUST] Use one consistent log structure across modules.
+- [MUST] Do not comment obvious code.
 - [SHOULD] Add comments for non-obvious decisions, invariants, and tradeoffs.
+- [MUST] Comments and docstrings explain non-obvious decisions, invariants, edge cases, tradeoffs, external system assumptions, and failure handling.
 - [SHOULD] Avoid comments that only restate obvious code.
 - [MUST] Enforce deny-by-default `.gitignore` patterns, with minimal explicit allowlist.
 

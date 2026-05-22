@@ -13,7 +13,17 @@ from urllib.request import urlopen
 from scripts.logging_utils import configure_logger
 
 RAW_BASE_URL = "https://raw.githubusercontent.com/SergejSchweizer/agents/main"
-FRAGMENTS = ['fragments/00_purpose.md', 'fragments/10_core_rules.md', 'fragments/20_architecture.md', 'fragments/30_code_review.md', 'fragments/40_testing.md', 'fragments/50_security_and_end_goal.md']
+FRAGMENTS = [
+    "fragments/00_purpose.md",
+    "fragments/10_core_rules.md",
+    "fragments/20_architecture.md",
+    "fragments/30_code_quality_gates.md",
+    "fragments/40_testing.md",
+    "fragments/50_python_tooling.md",
+    "fragments/60_agent_workflow.md",
+    "fragments/70_security.md",
+    "fragments/80_release_and_sync.md",
+]
 LOGGER = logging.getLogger(__name__)
 
 

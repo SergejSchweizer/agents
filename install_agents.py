@@ -19,9 +19,12 @@ FRAGMENTS = [
     "fragments/00_purpose.md",
     "fragments/10_core_rules.md",
     "fragments/20_architecture.md",
-    "fragments/30_code_review.md",
+    "fragments/30_code_quality_gates.md",
     "fragments/40_testing.md",
-    "fragments/50_security_and_end_goal.md",
+    "fragments/50_python_tooling.md",
+    "fragments/60_agent_workflow.md",
+    "fragments/70_security.md",
+    "fragments/80_release_and_sync.md",
 ]
 CONFIG_RELATIVE_PATH = Path("config.yaml")
 SYNC_SCRIPT_RELATIVE_PATH = Path("scripts") / "sync_agents.py"
@@ -121,9 +124,12 @@ FRAGMENTS = [
     "fragments/00_purpose.md",
     "fragments/10_core_rules.md",
     "fragments/20_architecture.md",
-    "fragments/30_code_review.md",
+    "fragments/30_code_quality_gates.md",
     "fragments/40_testing.md",
-    "fragments/50_security_and_end_goal.md",
+    "fragments/50_python_tooling.md",
+    "fragments/60_agent_workflow.md",
+    "fragments/70_security.md",
+    "fragments/80_release_and_sync.md",
 ]
 LOGGER = logging.getLogger(__name__)
 
