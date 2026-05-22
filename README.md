@@ -78,6 +78,12 @@ All modules write to the same logfile configured in `config.yaml`:
 logfile: logs/agents.log
 ```
 
+Debugging expectation for CLI workflows:
+
+- Run CLI commands with `--debug` when available.
+- If needed, add targeted extra log messages for diagnosis.
+- While a script is running, actively analyze logfile output.
+
 ## Idempotency
 
 - Running the installer multiple times is safe.

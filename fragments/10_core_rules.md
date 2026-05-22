@@ -1,38 +1,41 @@
-## Core Rules (Always Active)
+## Core Rules
 
-### Minimum Change Principle
+## Scope
 
-- Prefer the smallest safe change that fully resolves the problem.
-- Prefer clarity over cleverness.
-- Preserve backward compatibility unless a breaking change is intentional and documented.
+Always active across all modules and workflows.
 
-### Modularity And Interfaces
+## Rules
 
-- Keep module boundaries explicit and cohesive.
-- Keep side effects isolated behind adapters/interfaces.
-- Keep business logic separate from framework/storage details.
+- [MUST] Prefer the smallest safe change that fully resolves the issue.
+- [MUST] Preserve backward compatibility by default.
+- [MUST] Keep business logic separate from framework/storage details.
+- [MUST] Isolate side effects behind explicit interfaces and adapters.
+- [MUST] Keep execution deterministic where feasible.
+- [MUST] Keep operational docs aligned with behavior changes.
+- [MUST] Use one shared logfile path defined in `config.yaml`.
+- [MUST] Use one consistent log structure across modules.
+- [SHOULD] Add comments for non-obvious decisions, invariants, and tradeoffs.
+- [SHOULD] Avoid comments that only restate obvious code.
+- [MUST] Enforce deny-by-default `.gitignore` patterns, with minimal explicit allowlist.
 
-### Reproducibility
+## Agent Action Checklist
 
-- Keep execution paths deterministic where feasible.
-- Version important artifacts and schemas.
-- Preserve seeds and runtime configuration needed for reproducible runs.
+- Before edit: identify contract boundaries and side effects.
+- During edit: keep module responsibilities cohesive.
+- After edit: confirm logging path and format consistency plus docs alignment.
 
-### Documentation
+## Definition of Done
 
-- Keep operational docs aligned with code behavior.
-- Do not leave critical behavior changes undocumented.
-- Every important line of code in the repository should include a comment.
+- Boundaries remain explicit.
+- Logging is centralized and consistent.
+- Documentation reflects behavior.
 
-### Logging Consistency
+## Verification Commands
 
-- All modules must write to the same logfile.
-- The logfile path must be defined in `config.yaml`.
-- Log entries from different modules must use one unified format and structure.
+- `rg -n "logfile|logging|config.yaml" .`
+- `ruff check .`
+- `pytest -q`
 
-### Version Control Hygiene
+## Exceptions and Escalation
 
-- Use deny-by-default ignore rules: ignore everything in `.gitignore` first, then explicitly allow only required repository files.
-- Keep the allowlist minimal and intentional; do not permit generated artifacts, caches, environments, or local machine state unless explicitly required.
-
----
+- Escalate if a required change introduces unavoidable compatibility break.

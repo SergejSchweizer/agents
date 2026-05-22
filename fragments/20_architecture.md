@@ -1,80 +1,42 @@
 ## Architecture
 
-Apply these rules when a task involves system design, module boundaries, refactoring strategy, scalability, reliability, or technical tradeoffs.
+## Scope
 
-### Architecture Goals
+Applies to system design, module boundaries, refactors, scalability, reliability, and technical tradeoffs.
 
-- Preserve clear modular separation and explicit interfaces.
-- Optimize for maintainability, extensibility, and reproducibility.
-- Keep business logic separated from infrastructure and framework details.
+## Rules
 
-### Definition Of Done (Architecture)
+- [MUST] Define contract shape first (types, schema, invariants), then implement.
+- [MUST] Keep dependency direction from policy and domain to implementation details.
+- [MUST] Keep ownership explicit for each module (inputs, outputs, side effects).
+- [MUST] Keep operations idempotent and restart-safe by default.
+- [MUST] Use bounded, configurable concurrency.
+- [MUST] Keep schema changes backward compatible unless versioned intentionally.
+- [SHOULD] Prefer incremental and delta processing over full rescans.
+- [SHOULD] Prefer composable functions before introducing pattern-heavy class hierarchies.
+- [MAY] Use Strategy, Template Method, Factory, and Repository patterns when they reduce duplication and improve extensibility.
+- [SHOULD] Prefer `polars` over `pandas` when ecosystem constraints allow.
 
-- Boundaries and responsibilities are explicit in code structure and naming.
-- New/changed contracts are documented and validated at boundaries.
-- Scalability and reliability implications are addressed (not deferred implicitly).
-- Refactor behavior is covered by regression tests.
+## Agent Action Checklist
 
-### Architecture Rules
+- Identify architecture impact level (none, local, cross-module).
+- If contract changes: define compatibility and migration plan.
+- If refactor: preserve behavior and add regression coverage.
+- If scalability-sensitive: validate idempotency, ordering, and memory and concurrency bounds.
 
-- Keep modules isolated and cohesive.
-- Avoid monolithic scripts for core logic.
-- Move reusable notebook logic into versioned modules.
-- Prefer composable designs and separation of concerns.
-- Prefer `polars` over `pandas` for dataframe processing when it fits the task and ecosystem constraints.
-- Prioritize long-term maintainability over short-term convenience.
+## Definition of Done
 
-### Interface and Contract Practices
+- Module boundaries are explicit.
+- Contracts are typed and validated.
+- Scalability and reliability implications are addressed.
+- Regression tests cover changed behavior.
 
-- Define contract shape first (types, schema, invariants), then implement.
-- Make invalid states unrepresentable with DTOs, enums/literals, and validation.
-- Keep backward compatibility by default; version only intentional breaking changes.
-- Keep ownership explicit for each module (inputs, outputs, side effects).
+## Verification Commands
 
-### Design Patterns Policy
+- `pytest -q`
+- `ruff check .`
+- `mypy .` or `pyright`
 
-Use patterns pragmatically only when they reduce duplication, improve clarity, or improve safe extensibility.
+## Exceptions and Escalation
 
-Preferred usage:
-
-- Strategy pattern for interchangeable behaviors.
-- Template Method for shared orchestration with well-defined variant steps.
-- Factory pattern for constructing typed clients/services.
-- Repository/DAO boundaries for storage access and persistence isolation.
-
-Rules:
-
-- Do not introduce patterns as ceremony.
-- Keep pattern boundaries explicit and discoverable.
-- Prefer small pure helper functions before introducing classes.
-- Pattern-introducing refactors must preserve behavior and include regression tests.
-
-### Scalability and Reliability Policy
-
-Technical decisions must account for growth in data volume, entities/users/traffic, history size, job frequency, and integrations/providers.
-
-Required implications:
-
-- Prefer incremental/delta processing over full rescans when feasible.
-- Keep operations idempotent.
-- Use bounded, configurable concurrency.
-- Keep schema changes backward compatible and versioned.
-- Preserve observability (progress, throughput, error isolation).
-- Use storage/index strategies that remain efficient as volume grows.
-
-### Operational Design Practices
-
-- Design workflows to be restart-safe and idempotent by default.
-- Bound memory and concurrency with explicit configuration knobs.
-- Isolate external dependencies with adapters to support retries, fallback, and test doubles.
-- Prefer deterministic ordering and deduplication in persistent outputs.
-
-### Architecture Review Checklist
-
-- Are layering boundaries preserved?
-- Does dependency direction flow from policy to implementation?
-- Are contracts explicit, typed, and validated?
-- Is the change idempotent and restart-safe where required?
-- Are tradeoffs, risks, and migration implications documented?
-
----
+- Escalate before large boundary shifts or contract versioning decisions.

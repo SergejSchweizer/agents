@@ -240,6 +240,8 @@ For large changes:
 - Every new or modified CLI command must have dedicated automated tests.
 - CLI commands must run autonomously as standalone invocations.
 - Every CLI must expose a `--debug` flag that enables extensive logging.
+- When an agent debugs a CLI itself, it must invoke the command with `--debug` whenever available, and/or add temporary extra log messages to improve diagnosis.
+- While a script is running, agents must actively analyze its logfile output to guide debugging decisions.
 - Treat logs as a primary debug source when diagnosing CLI behavior.
 
 ---

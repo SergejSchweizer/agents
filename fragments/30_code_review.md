@@ -1,59 +1,50 @@
 ## Code Review
 
-Apply these rules when reviewing changes, preparing PRs, or running quality gate validation before merge.
+## Scope
 
-### Review Priorities
+Applies to reviews, PR preparation, and quality-gate validation before merge.
 
-- Bugs and behavioral regressions.
-- Contract and schema integrity.
-- Architectural boundary violations.
-- Missing tests for risk-heavy logic.
-- Operational risk (idempotency, restartability, observability).
+## Rules
 
-### Severity Model
+- [MUST] Prioritize correctness and regression risk over style.
+- [MUST] Validate contract and schema integrity and boundary discipline.
+- [MUST] Flag operational risk (idempotency, restartability, observability).
+- [MUST] Require tests for risk-heavy behavior changes.
+- [MUST] Use explicit typing and return types on public interfaces.
+- [SHOULD] Require docstrings for non-trivial modules and functions.
+- [MUST] Run lint, format, typing, tests, and coverage checks before merge when practical.
 
-- High: correctness, data loss/corruption, security, broken contracts, runtime failure.
-- Medium: maintainability hazards, missing edge-case handling, observability gaps.
-- Low: style/documentation polish, non-blocking improvements.
+## Review Findings Format
 
-### Code Quality Rules
+- Severity: `High` | `Medium` | `Low`
+- Location: `path:line`
+- Risk: what can break
+- Recommendation: concrete fix
 
-- Use type hints consistently, including explicit return types.
-- Require docstrings for non-trivial modules/functions and concise usage notes for public interfaces.
-- Keep code compatible with explicit quality tooling.
+## Anti-Patterns To Flag
 
-Preferred tooling:
+- [MUST] Silent fallback masking broken state.
+- [MUST] Broad exception handling without context or re-raise strategy.
+- [MUST] Hidden side effects across module boundaries.
+- [MUST] Untyped public interfaces.
+- [MUST] Contract changes without migration notes.
 
-- Linting: `ruff` (or configured equivalent).
-- Formatting: `ruff format` (or configured equivalent).
-- Type checking: `mypy` or `pyright` (project standard).
-- Tests: `pytest` (or configured equivalent).
-- Import boundaries: `lint-imports` (or configured equivalent).
+## Agent Action Checklist
 
-Pre-commit quality gates must include lint, format, typing, import-boundary checks, tests, and coverage.
+- Read intended behavior and scope first.
+- Validate happy path and failure paths.
+- Verify tests for changed risk areas.
+- Report findings ordered by severity.
 
-### Review Workflow
+## Definition of Done
 
-1. Understand intended behavior and scope.
-2. Validate correctness and contract compatibility first.
-3. Check failure paths, error messaging, and observability.
-4. Verify tests and coverage for changed risk areas.
-5. Check documentation, configuration, and schema alignment.
-6. Report findings ordered by severity with actionable guidance.
+- Findings are actionable and severity-ranked.
+- Risks and missing tests are explicit.
+- Documentation, config, and schema impacts are called out.
 
-### Anti-Patterns To Flag
+## Verification Commands
 
-- Silent fallback that hides broken state.
-- Broad exception handling without context or re-raise strategy.
-- Hidden side effects across module boundaries.
-- Untyped public interfaces.
-- Contract changes without migration notes.
-
-### PR Guidance
-
-- Keep scope focused.
-- Add/update tests.
-- Update relevant docs.
-- Note architectural implications and rollback/mitigation notes for operational risk.
-
----
+- `ruff check .`
+- `ruff format --check .`
+- `mypy .` or `pyright`
+- `pytest -q`

@@ -1,45 +1,53 @@
 ## Testing
 
-Apply these rules when adding/changing tests, fixing bugs, refactoring behavior, adding CLI commands, or validating release readiness.
+## Scope
 
-### Testing Rules
+Applies when adding or changing tests, fixing bugs, refactoring behavior, adding CLI commands, or validating release readiness.
 
-- Run targeted tests for changed areas.
-- Run full test suite before finalization when practical.
-- Disclose any checks that could not run and why.
-- Add regression tests for every bug fix.
-- Test happy path, edge cases, and failure paths.
-- Keep tests deterministic.
+## Rules
 
-### Test Design Practices
+- [MUST] Run targeted tests for changed areas.
+- [SHOULD] Run full test suite before finalization when practical.
+- [MUST] Disclose checks that could not run and why.
+- [MUST] Add regression tests for every bug fix.
+- [MUST] Test happy path, edge cases, and failure paths.
+- [MUST] Keep tests deterministic.
 
-- Prefer behavior-focused tests over implementation-coupled tests.
-- Use small, named fixtures with explicit setup intent.
-- Cover boundary values, empty inputs, and malformed inputs.
-- Validate outcomes and failure modes (error types/messages).
+## Coverage Policy
 
-### Coverage Policy (MANDATORY)
+- [MUST] Target repository coverage is 90%.
+- [MUST] Preserve or improve coverage for meaningful changes.
+- [MUST] If coverage is below 90%, disclose the gap and follow-up work.
 
-- Target repository test coverage is 90%.
-- Preserve or improve coverage for meaningful changes.
-- Prioritize highest-risk paths first: correctness, persistence, contracts, orchestration, failure handling.
-- If measured coverage is below 90%, disclose the gap and required follow-up work.
+## CLI Validation
 
-### Refactoring Validation
+- [MUST] Every new or modified CLI command has dedicated automated tests.
+- [MUST] CLI commands run autonomously as standalone invocations.
+- [MUST] Every CLI exposes a `--debug` flag for extensive logging.
+- [MUST] Treat logs as a primary debug source for CLI diagnosis.
+- [MUST] When debugging, run CLI commands with `--debug` where available and or add targeted log messages.
+- [MUST] While a script is running, actively analyze logfile output.
 
-For large changes:
+## Agent Action Checklist
 
-1. Split work into small, testable steps.
-2. Run targeted tests after each step.
-3. Keep behavior stable between steps.
-4. Re-run full tests and quality gates at the end.
-5. Update docs in the same change set when behavior/process changed.
+- Reproduce with deterministic inputs.
+- Execute CLI with `--debug` during diagnosis.
+- Analyze logfile output while process runs.
+- Add or refine logs only where they improve failure isolation.
+- Add or adjust tests before finalizing the fix.
 
-### CLI Validation
+## Definition of Done
 
-- Every new or modified CLI command must have dedicated automated tests.
-- CLI commands must run autonomously as standalone invocations.
-- Every CLI must expose a `--debug` flag that enables extensive logging.
-- Treat logs as a primary debug source when diagnosing CLI behavior.
+- Bug and feature behavior is covered by tests.
+- Debug path is observable from logs.
+- Coverage impact is reported.
 
----
+## Verification Commands
+
+- `pytest -q`
+- `pytest --maxfail=1 -q`
+- `pytest --cov --cov-report=term-missing`
+
+## Exceptions and Escalation
+
+- Escalate if deterministic reproduction is not possible without production-only dependencies.
