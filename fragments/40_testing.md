@@ -39,5 +39,7 @@ For large changes:
 
 - Every new or modified CLI command must have dedicated automated tests.
 - CLI commands must run autonomously as standalone invocations.
+- Every CLI must expose a `--debug` flag that enables extensive logging.
+- Treat logs as a primary debug source when diagnosing CLI behavior.
 
 ---

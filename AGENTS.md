@@ -55,10 +55,6 @@ The codebase must be understandable by another engineer without tribal knowledge
 - Use deny-by-default ignore rules: ignore everything in `.gitignore` first, then explicitly allow only required repository files.
 - Keep the allowlist minimal and intentional; do not permit generated artifacts, caches, environments, or local machine state unless explicitly required.
 
-### Continuous Refactoring Loop
-
-- Run a loop in the background to re-analyze the project and apply refactoring suggestions automatically until no refactoring suggestions can be made.
-
 ---
 
 ## Architecture
@@ -243,6 +239,8 @@ For large changes:
 
 - Every new or modified CLI command must have dedicated automated tests.
 - CLI commands must run autonomously as standalone invocations.
+- Every CLI must expose a `--debug` flag that enables extensive logging.
+- Treat logs as a primary debug source when diagnosing CLI behavior.
 
 ---
 
