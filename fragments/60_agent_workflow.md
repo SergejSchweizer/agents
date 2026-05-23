@@ -8,6 +8,14 @@ Applies to day-to-day agent execution flow for implementation, debugging, and de
 
 - [MUST] Before changing code, inspect relevant files.
 - [MUST] Before changing code, identify the smallest safe change.
+- [MUST] Never commit directly to `main`.
+- [MUST] Always create a feature branch.
+- [MUST] Before committing, run `ruff check .`, `pyright`, `pytest`, and `coverage run -m pytest`.
+- [MUST] Do not weaken tests to make them pass.
+- [MUST] Do not remove type hints.
+- [MUST] Do not introduce hidden network calls.
+- [MUST] Keep architecture boundaries explicit.
+- [SHOULD] Prefer small, reviewable commits.
 - [MUST] Preserve existing public contracts unless explicitly asked to change them.
 - [MUST] Add or update tests for behavioral changes.
 - [MUST] Run relevant quality gates.
