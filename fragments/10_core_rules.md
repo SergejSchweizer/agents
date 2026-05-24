@@ -12,8 +12,9 @@ Always active across all modules and workflows.
 - [MUST] Isolate side effects behind explicit interfaces and adapters.
 - [MUST] Keep execution deterministic where feasible.
 - [MUST] Keep operational docs aligned with behavior changes.
-- [MUST] Use one shared logfile path defined in `config.yaml`.
-- [MUST] Use one consistent log structure across modules.
+- [MUST] Use one shared log root path defined in `config.yaml`, and it must point to the `.logs` directory.
+- [MUST] Every module writes to its own logfile under the shared `.logs` directory.
+- [MUST] Use one consistent log message structure across all modules.
 - [MUST] Do not comment obvious code.
 - [SHOULD] Add comments for non-obvious decisions, invariants, and tradeoffs.
 - [MUST] Comments and docstrings explain non-obvious decisions, invariants, edge cases, tradeoffs, external system assumptions, and failure handling.
@@ -34,7 +35,7 @@ Always active across all modules and workflows.
 
 ## Verification Commands
 
-- `rg -n "logfile|logging|config.yaml" .`
+- `rg -n "logfile|logging|config.yaml|\\.logs" .`
 - `ruff check .`
 - `pytest -q`
 
