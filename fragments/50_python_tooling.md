@@ -17,6 +17,8 @@ Applies to Python quality tooling, typing, formatting, and local validation comm
 - [SHOULD] Configure `ruff`, `pyright`, `pytest`, `coverage`, and docstring tooling via `pyproject.toml` when supported.
 - [SHOULD] Avoid scattered configuration files unless a tool does not support `pyproject.toml`.
 - [MUST] Keep code compatible with the configured formatter, linter, type checker, and test runner.
+- [MUST] Pyright and other configured Python quality tools must run in strict mode where supported.
+- [MUST] Do not relax tool strictness or suppress failures globally to make checks pass.
 - [MUST] Use type hints consistently, including explicit return types for public interfaces.
 - [MUST] Public modules, public classes, public functions, CLIs, and architectural boundaries have concise docstrings.
 - [MUST] Keep import boundaries compatible with repository rules when boundary tooling is configured.
