@@ -201,6 +201,8 @@ def main() -> int:
 if __name__ == "__main__":
     sys.exit(main())
 """
+
+
 def configure_bootstrap_logger(name: str) -> logging.Logger:
     """Configure process-wide logger for installer runtime."""
     logfile_path = BOOTSTRAP_LOGFILE
@@ -275,7 +277,10 @@ def write_managed_files(repo_root: Path) -> dict[str, bool]:
         "scripts/logging_utils.py": write_file(
             repo_root / LOGGING_UTILS_RELATIVE_PATH, LOGGING_UTILS_SCRIPT_CONTENT
         ),
-        "config.yaml": write_file(repo_root / CONFIG_RELATIVE_PATH, CONFIG_YAML_CONTENT),
+        "config.yaml": write_file(
+            repo_root / CONFIG_RELATIVE_PATH,
+            CONFIG_YAML_CONTENT,
+        ),
     }
 
 

@@ -21,13 +21,13 @@ repos:
 
       - id: pytest
         name: pytest
-        entry: pytest -q
+        entry: python -m pytest -q
         language: system
         pass_filenames: false
 
       - id: sync-readme-coverage-check
         name: sync-readme-coverage-check
-        entry: python scripts/sync_readme_coverage.py --check-only
+        entry: python -m scripts.sync_readme_coverage --check-only
         language: system
         pass_filenames: false
 
