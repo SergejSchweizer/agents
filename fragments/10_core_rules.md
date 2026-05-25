@@ -18,6 +18,8 @@ Always active across all modules and workflows.
 - [MUST] Do not comment obvious code.
 - [SHOULD] Add comments for non-obvious decisions, invariants, and tradeoffs.
 - [MUST] Comments and docstrings explain non-obvious decisions, invariants, edge cases, tradeoffs, external system assumptions, and failure handling.
+- [MUST] Add inline comments for important non-obvious data logic, including forward-fill, interpolation, resampling, timestamp normalization, timezone handling, rolling windows, and numerical stability safeguards.
+- [MUST] For market-data and derivatives workflows, inline comments must document funding normalization, open-interest reconstruction, option-surface reconstruction, feature engineering decisions, leakage prevention, and exchange-specific behavior.
 - [SHOULD] Avoid comments that only restate obvious code.
 - [MUST] Enforce deny-by-default `.gitignore` patterns, with minimal explicit allowlist.
 

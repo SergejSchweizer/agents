@@ -12,6 +12,7 @@ Applies when adding or changing tests, fixing bugs, refactoring behavior, adding
 - [MUST] Add regression tests for every bug fix.
 - [MUST] Test happy path, edge cases, and failure paths.
 - [MUST] Keep tests deterministic.
+- [MUST] Run `coverage run -m pytest` and `coverage report` for release-ready validation when practical.
 
 ## Coverage Policy
 
@@ -35,6 +36,7 @@ Applies when adding or changing tests, fixing bugs, refactoring behavior, adding
 - Analyze logfile output while process runs.
 - Add or refine logs only where they improve failure isolation.
 - Add or adjust tests before finalizing the fix.
+- Run the documented pre-commit command sequence before finalizing: Ruff, `interrogate`, `pydoclint`, type checks, tests, and coverage.
 
 ## Definition of Done
 
@@ -47,6 +49,8 @@ Applies when adding or changing tests, fixing bugs, refactoring behavior, adding
 - `pytest -q`
 - `pytest --maxfail=1 -q`
 - `pytest --cov --cov-report=term-missing`
+- `coverage run -m pytest`
+- `coverage report`
 
 ## Exceptions and Escalation
 

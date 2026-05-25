@@ -18,9 +18,11 @@ Applies to review readiness, PR preparation, and pre-merge quality-gate validati
 - [SHOULD] Require docstrings for non-trivial modules and functions.
 - [MUST] Run lint, format, typing, tests, and coverage checks before merge when practical.
 - [MUST] Required quality-gate checks include Ruff linting, Ruff formatting check, Pyright strict type checking, Pytest, coverage threshold, docstring checks, import boundary checks, and architecture tests.
+- [MUST] Required documentation checks include `interrogate` docstring coverage and `pydoclint` signature-docstring consistency validation.
 - [MUST] Run quality tools in strict mode where available, and fail the build on any reported error.
 - [MUST] Do not use permissive flags or downgraded severity levels that hide lint, type, formatting, or test failures.
 - [MUST] Agents must not bypass checks with `--no-verify` unless explicitly instructed by the human maintainer.
+- [MUST] `.pre-commit-config.yaml` includes and maintains hooks for `ruff`, `interrogate`, `pydoclint`, `pyright`, and `pytest`.
 
 ## Review Findings Format
 
@@ -54,5 +56,7 @@ Applies to review readiness, PR preparation, and pre-merge quality-gate validati
 
 - `ruff check .`
 - `ruff format --check .`
+- `interrogate .`
+- `pydoclint src`
 - `pyright --level error`
 - `pytest -q`
