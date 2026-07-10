@@ -207,7 +207,9 @@ Applies when adding or changing tests, fixing bugs, refactoring behavior, adding
 ## Rules
 
 - [MUST] Run targeted tests for changed areas.
+- [MUST] For stacked PRs, run only the smallest reliable set of tests related to that PR's changed contracts and behavior.
 - [SHOULD] Run full test suite before finalization when practical.
+- [MUST] For a stack of related PRs, run the full test suite before the final squash merge into `main`, not on every intermediate stacked PR.
 - [MUST] Disclose checks that could not run and why.
 - [MUST] Add regression tests for every bug fix.
 - [MUST] Test happy path, edge cases, and failure paths.
@@ -333,6 +335,8 @@ Applies to day-to-day agent execution flow for implementation, debugging, and de
 - [MUST] If the working tree is not clean before starting, stop and report changed files.
 - [MUST] Do not overwrite, delete, stash, reset, or otherwise discard user changes unless explicitly instructed.
 - [MUST] Before committing, run `ruff check .`, `pyright`, `pytest`, and `coverage run -m pytest`.
+- [MUST] For stacked PRs, replace full-suite `pytest` and coverage runs on intermediate PRs with the smallest meaningful related test set, plus static checks that cover the changed files.
+- [MUST] Before the final squash merge of a stacked PR series into `main`, run the full configured validation suite, including full tests and coverage when practical.
 - [MUST] If configured, also run `pre-commit run --all-files` and include repository-specific typing or import boundary checks.
 - [MUST] If a required check fails, fix it before commit or clearly report why it is unrelated and safe to defer.
 - [MUST] Before committing, inspect `git diff` and `git status` and ensure only task-relevant changes are included.
@@ -377,7 +381,7 @@ Remove checks that do not exist in the repository.
 - State affected datasets, layers, or commands.
 - State whether Bronze, Silver, or Gold behavior changed.
 
-## Validation
+## Targeted Validation
 
 - [ ] ruff check .
 - [ ] ruff format .
@@ -385,8 +389,13 @@ Remove checks that do not exist in the repository.
 - [ ] pyright
 - [ ] ty check
 - [ ] lint-imports --config .importlinter
-- [ ] pytest
-- [ ] pytest --cov
+- [ ] Related pytest subset
+- [ ] Related coverage subset, if coverage is impacted
+
+## Full Final Validation
+
+- [ ] Full pytest
+- [ ] Full pytest coverage
 - [ ] pre-commit run --all-files
 
 ## Risk
